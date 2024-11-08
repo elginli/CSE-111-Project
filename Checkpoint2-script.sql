@@ -383,7 +383,7 @@ Join Shipment ON 'Order'.OrderID = Shipment.OrderID
 Group by 'Order'.OrderID;
 
 
--- Getting single person order search
+-- Getting a single person's order
 SELECT Customer.Name, Product.Name AS Item, 'Order'.OrderID AS Order_id, Shipment.ShipmentDate AS Shipment_date, Shipment.Status
 From 'Order', Product
 Join OrderProduct ON OrderProduct.OrderID = 'Order'.OrderID AND OrderProduct.ProductID = Product.ProductID
