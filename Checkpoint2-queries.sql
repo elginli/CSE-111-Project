@@ -170,9 +170,6 @@ SELECT * FROM 'Order'
 WHERE OrderDate >= '2024-10-01'
 ORDER BY OrderDate DESC;
 
-
-
-
 -- Everyones Order
 
 SELECT Customer.Name, Product.Name AS Item, 'Order'.OrderID AS Order_id
