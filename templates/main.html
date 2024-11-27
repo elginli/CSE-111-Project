@@ -1,0 +1,136 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        async function fetchProducts(url, tableId, forOrder = false) {
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            const table = document.getElementById(tableId);
+            table.innerHTML = ""; // Clear existing data
+
+            if (data.length === 0) {
+                table.innerHTML = "<tr><td colspan='5'>No data available</td></tr>";
+                return;
+            }
+
+            // Create table headers dynamically
+            const headers = Object.keys(data[0]);
+            if (forOrder) headers.push("Order Quantity"); // Add a column for quantities
+            const headerRow = document.createElement("tr");
+            headers.forEach(header => {
+                const th = document.createElement("th");
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Populate table rows
+            data.forEach(item => {
+                const row = document.createElement("tr");
+                headers.forEach(header => {
+                    const td = document.createElement("td");
+                    if (header === "Order Quantity") {
+                        // Add an input for order quantity
+                        const input = document.createElement("input");
+                        input.type = "number";
+                        input.min = 0;
+                        input.max = item.StockQuantity; // Ensure users can't order more than available
+                        input.value = 0;
+                        input.dataset.productId = item.ProductID; // Store the product ID in a data attribute
+                        td.appendChild(input);
+                    } else {
+                        td.textContent = item[header] || ""; // Handle null values
+                    }
+                    row.appendChild(td);
+                });
+                table.appendChild(row);
+            });
+        }
+
+        async function fetchProductsByCategory(category, tableId) {
+            const url = `/products/category/${category}`;
+            await fetchProducts(url, tableId);
+        }
+
+        async function fetchProductsForOrder() {
+            await fetchProducts('/product', 'productTable', true);
+        }
+
+        async function placeOrder() {
+            const table = document.getElementById('productTable');
+            const inputs = table.querySelectorAll('input[type="number"]');
+            const orderData = {};
+
+            inputs.forEach(input => {
+                const productId = input.dataset.productId; // Retrieve product ID
+                const quantity = parseInt(input.value);
+                if (quantity > 0) {
+                    orderData[productId] = quantity;
+                }
+            });
+
+            if (Object.keys(orderData).length === 0) {
+                alert("Please select at least one product to order.");
+                return;
+            }
+
+            const response = await fetch('/place-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData),
+            });
+
+            const result = await response.json();
+            alert(result.message);
+        }
+
+    </script>
+</head>
+<body>
+    <h1>Customer Dashboard</h1>
+    <button onclick="window.location.href='/my-orders';">View My Orders</button>
+    <button class="logout" onclick="window.location.href='/logout'">Logout</button>
+    <div>
+        <button onclick="fetchProducts('/product', 'productTable')">All Products</button>
+        <button onclick="fetchProducts('/products/high-price', 'productTable')">High Price Products</button>
+        <button onclick="fetchProducts('/products/ordered-by-price', 'productTable')">Ordered by Price</button>
+        <button onclick="fetchProductsByCategory('Electronics', 'productTable')">View Electronics</button>
+        <button onclick="fetchProductsByCategory('Accessories', 'productTable')">View Accessories</button>
+        <button onclick="fetchProductsForOrder()">Place an Order</button>
+    </div>
+    <table id="productTable"></table>
+    <button onclick="placeOrder()" style="margin-top: 20px; display: block;">Submit Order</button>
+</body>
+
+
+
