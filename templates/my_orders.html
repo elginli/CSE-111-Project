@@ -27,27 +27,33 @@
             <tr>
                 <th>Order ID</th>
                 <th>Order Date</th>
-                <th>Total Amount</th>
                 <th>Product</th>
                 <th>Quantity</th>
+                <th>Product Amount</th>
                 <th>Shipment Status</th>
             </tr>
         </thead>
         <tbody>
-            {% for order in orders %}
-            <tr>
-                <td>{{ order.OrderID }}</td>
-                <td>{{ order.OrderDate }}</td>
-                <td>{{ order.TotalAmount }}</td>
-                <td>{{ order.ProductName }}</td>
-                <td>{{ order.Quantity }}</td>
-                <td>{{ order.ShipmentStatus }}</td>
-            </tr>
-            {% endfor %}
+            {% if orders %}
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.OrderID }}</td>
+                    <td>{{ order.OrderDate }}</td>
+                    <td>{{ order.ProductName }}</td>
+                    <td>{{ order.Quantity }}</td>
+                    <td>{{ order.ProductTotal }}</td>
+                    <td>{{ order.ShipmentStatus }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">No orders found.</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
     <a href="/">Back to Dashboard</a>
 </body>
-</html>
+
 
 

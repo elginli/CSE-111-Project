@@ -53,13 +53,86 @@ def login():
 
     return render_template('login.html')  # Render the login template
 
-    
+@app.route('/staff_login', methods=['GET', 'POST'])
+def staff_login():
+    if request.method == 'POST':
+        staff_id = request.form.get('staff_id')
+        email = request.form.get('email')
+        print(f"Staff Login Attempt: StaffID = {staff_id}, Email = {email}")
+
+        # Connect to the database and validate staff credentials
+        conn = open_connection()
+        if conn:
+            cursor = conn.cursor()
+            query = "SELECT * FROM Staff WHERE StaffID = ? AND Email = ?"
+            cursor.execute(query, (staff_id, email))
+            user = cursor.fetchone()
+            conn.close()
+
+            if user:
+                # Store the user details in the session
+                session['staff_id'] = user[0]
+                session['user_type'] = 'Staff'
+                flash('Staff login successful!', 'success')
+                return redirect(url_for('mainStaff'))
+            else:
+                flash('Invalid ID or email for Staff!', 'danger')
+
+    return render_template('staff_login.html')  # Staff login template
+
+@app.route('/supplier_login', methods=['GET', 'POST'])
+def supplier_login():
+    if request.method == 'POST':
+        supplier_id = request.form.get('supplier_id')
+        email = request.form.get('email')
+        print(f"Supplier Login Attempt: SupplierID = {supplier_id}, Email = {email}")
+
+        # Connect to the database and validate supplier credentials
+        conn = open_connection()
+        if conn:
+            cursor = conn.cursor()
+            query = "SELECT * FROM Supplier WHERE SupplierID = ? AND ContactInfo = ?"
+            cursor.execute(query, (supplier_id, email))
+            user = cursor.fetchone()
+            conn.close()
+
+            if user:
+                # Store the user details in the session
+                session['supplier_id'] = user[0]
+                session['user_type'] = 'Supplier'
+                flash('Supplier login successful!', 'success')
+                return redirect(url_for('mainSupplier'))  # Redirect to the correct route
+            else:
+                flash('Invalid ID or email for Supplier!', 'danger')
+
+    return render_template('supplier_login.html')  # Supplier login template
 
 @app.route('/logout')
 def logout():
     session.clear()  # Clear the session
     flash('You have been logged out!', 'info')
     return redirect(url_for('login'))
+
+@app.route('/mainSupplier')
+def mainSupplier():
+    if 'supplier_id' not in session:
+        flash('Unauthorized access! Please log in.', 'danger')
+        return redirect(url_for('supplier_login'))
+
+    # Pass any necessary supplier-specific information to the template
+    supplier_id = session.get('supplier_id')
+    return render_template('mainSupplier.html', supplier_id=supplier_id)
+
+
+@app.route('/mainStaff')
+def mainStaff():
+    if 'staff_id' not in session:
+        flash('Unauthorized access! Please log in.', 'danger')
+        return redirect(url_for('staff_login'))
+
+    # Pass any necessary supplier-specific information to the template
+    staff_id = session.get('staff_id')
+    return render_template('mainStaff.html', staff_id=staff_id)
 
 # Route to get all items from Inventory
 @app.route('/product', methods=['GET'])
@@ -168,20 +241,22 @@ def my_orders():
     orders = []
     if conn:
         cursor = conn.cursor()
+
+        # Query to fetch orders with product details and calculate product total price
         query = """
         SELECT 
-            `Order`.OrderID AS OrderID, 
-            `Order`.OrderDate AS OrderDate, 
-            `Order`.TotalAmount AS TotalAmount, 
+            o.OrderID AS OrderID, 
+            o.OrderDate AS OrderDate, 
             Product.Name AS ProductName, 
             OrderProduct.Quantity AS Quantity, 
+            (Product.Price * OrderProduct.Quantity) AS ProductTotal,  -- Calculate per-product total
             Shipment.Status AS ShipmentStatus
-        FROM `Order`
-        JOIN OrderProduct ON OrderProduct.OrderID = `Order`.OrderID
+        FROM `Order` o
+        JOIN OrderProduct ON OrderProduct.OrderID = o.OrderID
         JOIN Product ON OrderProduct.ProductID = Product.ProductID
-        LEFT JOIN Shipment ON `Order`.OrderID = Shipment.OrderID
-        WHERE `Order`.CustomerID = ?
-        ORDER BY `Order`.OrderDate DESC;
+        LEFT JOIN Shipment ON o.OrderID = Shipment.OrderID
+        WHERE o.CustomerID = ?
+        ORDER BY o.OrderDate DESC, Product.Name ASC;
         """
         cursor.execute(query, (customer_id,))
         results = cursor.fetchall()
@@ -192,14 +267,15 @@ def my_orders():
             orders.append({
                 'OrderID': row[0],
                 'OrderDate': row[1],
-                'TotalAmount': row[2],
-                'ProductName': row[3],
-                'Quantity': row[4],
+                'ProductName': row[2],
+                'Quantity': row[3],
+                'ProductTotal': row[4],  # Calculated per-product total
                 'ShipmentStatus': row[5]
             })
 
     # Pass the orders to the template
     return render_template('my_orders.html', orders=orders)
+
 
 
 #get products by category
