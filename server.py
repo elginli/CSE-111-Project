@@ -47,6 +47,7 @@ def login():
                 session['customer_id'] = user[0]  
                 session['email'] = user[2]       
                 flash('Login successful!', 'success')
+                print('Login sucessful')
                 return redirect(url_for('home'))
             else:
                 flash('Invalid ID or email!', 'danger')
@@ -74,6 +75,7 @@ def staff_login():
                 session['staff_id'] = user[0]
                 session['user_type'] = 'Staff'
                 flash('Staff login successful!', 'success')
+                print('Login sucessful')
                 return redirect(url_for('mainStaff'))
             else:
                 flash('Invalid ID or email for Staff!', 'danger')
@@ -101,6 +103,7 @@ def supplier_login():
                 session['supplier_id'] = user[0]
                 session['user_type'] = 'Supplier'
                 flash('Supplier login successful!', 'success')
+                print('Login sucessful')
                 return redirect(url_for('mainSupplier'))  # Redirect to the correct route
             else:
                 flash('Invalid ID or email for Supplier!', 'danger')
@@ -111,6 +114,7 @@ def supplier_login():
 def logout():
     session.clear()  # Clear the session
     flash('You have been logged out!', 'info')
+    print('User logged out')
     return redirect(url_for('login'))
 
 @app.route('/mainSupplier')
@@ -122,7 +126,6 @@ def mainSupplier():
     # Pass any necessary supplier-specific information to the template
     supplier_id = session.get('supplier_id')
     return render_template('mainSupplier.html', supplier_id=supplier_id)
-
 
 @app.route('/mainStaff')
 def mainStaff():
@@ -162,6 +165,59 @@ def get_products():
         except sqlite3.Error as e:
             return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Connection failed"}), 500
+
+@app.route('/update_shipment', methods=['GET', 'POST'])
+def update_shipment():
+    if 'staff_id' not in session:
+        flash("Unauthorized access! Please log in.", "danger")
+        return redirect(url_for('staff_login'))
+
+    if request.method == 'POST':
+        shipment_id = request.form['shipment_id']
+        status = request.form['status']
+        shipment_date = request.form['shipment_date']
+
+        conn = open_connection()
+        try:
+            cursor = conn.cursor()
+            query = """
+                UPDATE Shipment
+                SET Status = ?, ShipmentDate = ?
+                WHERE ShipmentID = ?
+            """
+            cursor.execute(query, (status, shipment_date, shipment_id))
+            conn.commit()
+            flash("Shipment updated successfully!", "success")
+        except sqlite3.Error as e:
+            flash(f"Database error: {e}", "danger")
+        finally:
+            conn.close()
+
+    return render_template('update_shipment.html')
+
+
+@app.route('/remove_shipment', methods=['GET', 'POST'])
+def remove_shipment():
+    if 'staff_id' not in session:
+        flash("Unauthorized access! Please log in.", "danger")
+        return redirect(url_for('staff_login'))
+
+    if request.method == 'POST':
+        shipment_id = request.form['shipment_id']
+
+        conn = open_connection()
+        try:
+            cursor = conn.cursor()
+            query = "DELETE FROM Shipment WHERE ShipmentID = ?"
+            cursor.execute(query, (shipment_id,))
+            conn.commit()
+            flash("Shipment removed successfully!", "success")
+        except sqlite3.Error as e:
+            flash(f"Database error: {e}", "danger")
+        finally:
+            conn.close()
+
+    return render_template('remove_shipment.html')
 
 
 # Find products with price higher than 500
