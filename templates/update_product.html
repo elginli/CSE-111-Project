@@ -1,0 +1,124 @@
+<html>
+<head>
+    <title>Update Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select, input[type="text"], input[type="number"], input[type="hidden"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        .no-product {
+            text-align: center;
+            font-size: 16px;
+            color: #555;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        // Reload the page with the selected product ID
+        function loadProductDetails() {
+            const productId = document.getElementById('product_id').value;
+            window.location.href = `/update_product?product_id=${productId}`;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Update Product</h1>
+        <form method="POST" action="/update_product">
+            <label for="product_id">Select Product ID:</label>
+            <select id="product_id" name="product_id" onchange="loadProductDetails()">
+                {% for id in product_ids %}
+                <option value="{{ id }}" {% if selected_product_id == id %}selected{% endif %}>
+                    {{ id }}
+                </option>
+                {% endfor %}
+            </select>
+
+            {% if product %}
+            <input type="hidden" name="product_id" value="{{ product[0] }}">
+            <label for="name">Product Name:</label>
+            <input type="text" id="name" name="name" value="{{ product[1] }}" required>
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" step="0.01" value="{{ product[2] }}" required>
+
+            <label for="category">Category:</label>
+            <input type="text" id="category" name="category" value="{{ product[3] }}" required>
+
+            <label for="stock_quantity">Stock Quantity:</label>
+            <input type="number" id="stock_quantity" name="stock_quantity" value="{{ product[4] }}" required>
+
+            <button type="submit">Update Product</button>
+            {% else %}
+            <p class="no-product">No product details available. Please select a valid Product ID.</p>
+            {% endif %}
+        </form>
+        <a href="{{ url_for('mainStaff') }}">Back to Staff Dashboard</a>
+    </div>
+</body>
+</html>
+
+

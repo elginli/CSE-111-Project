@@ -1,59 +1,122 @@
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
+
         table, th, td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
         }
+
         th, td {
-            padding: 10px;
-            text-align: left;
+            padding: 15px;
+            text-align: center;
         }
+
         th {
-            background-color: #f2f2f2;
+            background-color: #007bff;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            display: inline-block;
+            margin: 20px 0;
+            text-align: center;
+            text-decoration: none;
+            color: #007bff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        .no-orders {
+            text-align: center;
+            color: #555;
+            font-size: 16px;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
-    <h1>My Orders</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Order Date</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Product Amount</th>
-                <th>Shipment Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if orders %}
-                {% for order in orders %}
+    <div class="container">
+        <h1>My Orders</h1>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ order.OrderID }}</td>
-                    <td>{{ order.OrderDate }}</td>
-                    <td>{{ order.ProductName }}</td>
-                    <td>{{ order.Quantity }}</td>
-                    <td>{{ order.ProductTotal }}</td>
-                    <td>{{ order.ShipmentStatus }}</td>
+                    <th>Order ID</th>
+                    <th>Order Date</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Product Amount</th>
+                    <th>Shipment Status</th>
                 </tr>
-                {% endfor %}
-            {% else %}
+            </thead>
+            <tbody>
+                {% if orders %}
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.OrderID }}</td>
+                        <td>{{ order.OrderDate }}</td>
+                        <td>{{ order.ProductName }}</td>
+                        <td>{{ order.Quantity }}</td>
+                        <td>${{ order.ProductTotal }}</td>
+                        <td>{{ order.ShipmentStatus }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
                 <tr>
-                    <td colspan="6">No orders found.</td>
+                    <td colspan="6" class="no-orders">No orders found.</td>
                 </tr>
-            {% endif %}
-        </tbody>
-    </table>
-    <a href="/">Back to Dashboard</a>
+                {% endif %}
+            </tbody>
+        </table>
+        <a href="/">Back to Dashboard</a>
+    </div>
 </body>
+</html>
 
 
 

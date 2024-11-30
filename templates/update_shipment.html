@@ -1,0 +1,119 @@
+<html>
+<head>
+    <title>Update Shipment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select, input[type="text"], input[type="date"], input[type="hidden"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        .no-shipment {
+            text-align: center;
+            font-size: 16px;
+            color: #555;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        // Reload the page with the selected shipment ID
+        function loadShipmentDetails() {
+            const shipmentId = document.getElementById('shipment_id').value;
+            window.location.href = `/update_shipment?shipment_id=${shipmentId}`; // Use query parameter
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Update Shipment</h1>
+        <form method="POST" action="/update_shipment">
+            <label for="shipment_id">Select Shipment ID:</label>
+            <select id="shipment_id" name="shipment_id" onchange="loadShipmentDetails()">
+                {% for id in shipment_ids %}
+                <option value="{{ id }}" {% if shipment and shipment[0] == id %}selected{% endif %}>
+                    {{ id }}
+                </option>
+                {% endfor %}
+            </select>
+
+            {% if shipment %}
+            <input type="hidden" name="shipment_id" value="{{ shipment[0] }}">
+            <label for="shipment_date">Shipment Date:</label>
+            <input type="date" id="shipment_date" name="shipment_date" value="{{ shipment[2] }}" required>
+
+            <label for="status">Status:</label>
+            <input type="text" id="status" name="status" value="{{ shipment[3] }}" required>
+
+            <button type="submit">Update Shipment</button>
+            {% else %}
+            <p class="no-shipment">No shipment details available. Please select a valid Shipment ID.</p>
+            {% endif %}
+        </form>
+
+        <a href="{{ url_for('mainStaff') }}">Back to Staff Dashboard</a>
+    </div>
+</body>
+</html>
+
+

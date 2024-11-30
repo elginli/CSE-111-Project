@@ -1,0 +1,96 @@
+<html>
+<head>
+    <title>Remove Order</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #a71d2a;
+            transform: scale(1.05);
+        }
+
+        .center-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .center-link a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 16px;
+        }
+
+        .center-link a:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Remove Order</h1>
+        <form method="POST" action="/remove_order">
+            <label for="order_id">Select Order to Remove:</label>
+            <select id="order_id" name="order_id" required>
+                {% for order in orders %}
+                <option value="{{ order[0] }}">Order ID: {{ order[0] }} (Customer ID: {{ order[1] }})</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Remove Order</button>
+        </form>
+
+        <div class="center-link">
+            <a href="{{ url_for('mainStaff') }}">Back to Staff Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
+

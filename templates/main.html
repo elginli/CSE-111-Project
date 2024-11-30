@@ -1,80 +1,165 @@
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Management</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #000; /* Set title color to black */
+            margin-top: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .button-group button.logout {
+            background-color: #dc3545;
+        }
+
+        .button-group button.logout:hover {
+            background-color: #a71d2a; 
+        }
+
+        .button-group button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
+
         table, th, td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
         }
+
         th, td {
-            padding: 10px;
-            text-align: left;
+            padding: 15px;
+            text-align: center;
         }
+
         th {
-            background-color: #f2f2f2;
+            background-color: #007bff;
+            color: white;
+            text-transform: uppercase;
         }
-        button {
-            margin: 5px;
-            padding: 10px 15px;
-            background-color: #007BFF;
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        #submit-order {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #28a745;
             color: white;
             border: none;
+            border-radius: 5px;
+            font-size: 1rem;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        #submit-order:hover {
+            background-color: #218838;
+            transform: scale(1.05);
         }
     </style>
     <script>
         async function fetchProducts(url, tableId, forOrder = false) {
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            const table = document.getElementById(tableId);
-            table.innerHTML = ""; // Clear existing data
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
 
-            if (data.length === 0) {
-                table.innerHTML = "<tr><td colspan='5'>No data available</td></tr>";
-                return;
-            }
+                const table = document.getElementById(tableId);
+                table.innerHTML = ""; // Clear existing data
 
-            // Create table headers dynamically
-            const headers = Object.keys(data[0]);
-            if (forOrder) headers.push("Order Quantity"); // Add a column for quantities
-            const headerRow = document.createElement("tr");
-            headers.forEach(header => {
-                const th = document.createElement("th");
-                th.textContent = header;
-                headerRow.appendChild(th);
-            });
-            table.appendChild(headerRow);
+                if (data.length === 0) {
+                    table.innerHTML = "<tr><td colspan='5'>No data available</td></tr>";
+                    return;
+                }
 
-            // Populate table rows
-            data.forEach(item => {
-                const row = document.createElement("tr");
+                // Create table headers dynamically
+                const headers = Object.keys(data[0]);
+                if (forOrder) headers.push("Order Quantity"); // Add a column for quantities
+                const headerRow = document.createElement("tr");
                 headers.forEach(header => {
-                    const td = document.createElement("td");
-                    if (header === "Order Quantity") {
-                        // Add an input for order quantity
-                        const input = document.createElement("input");
-                        input.type = "number";
-                        input.min = 0;
-                        input.max = item.StockQuantity; // Ensure users can't order more than available
-                        input.value = 0;
-                        input.dataset.productId = item.ProductID; // Store the product ID in a data attribute
-                        td.appendChild(input);
-                    } else {
-                        td.textContent = item[header] || ""; // Handle null values
-                    }
-                    row.appendChild(td);
+                    const th = document.createElement("th");
+                    th.textContent = header;
+                    headerRow.appendChild(th);
                 });
-                table.appendChild(row);
-            });
+                table.appendChild(headerRow);
+
+                // Populate table rows
+                data.forEach(item => {
+                    const row = document.createElement("tr");
+                    headers.forEach(header => {
+                        const td = document.createElement("td");
+                        if (header === "Order Quantity") {
+                            // Add an input for order quantity
+                            const input = document.createElement("input");
+                            input.type = "number";
+                            input.min = 0;
+                            input.max = item.StockQuantity; // Ensure users can't order more than available
+                            input.value = 0;
+                            input.dataset.productId = item.ProductID; // Store the product ID in a data attribute
+                            td.appendChild(input);
+                        } else {
+                            td.textContent = item[header] || ""; // Handle null values
+                        }
+                        row.appendChild(td);
+                    });
+                    table.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error fetching products: ", error);
+            }
         }
 
         async function fetchProductsByCategory(category, tableId) {
@@ -113,24 +198,30 @@
             const result = await response.json();
             alert(result.message);
         }
-
     </script>
 </head>
 <body>
-    <h1>Customer Dashboard</h1>
-    <button onclick="window.location.href='/my-orders';">View My Orders</button>
-    <button class="logout" onclick="window.location.href='/logout'">Logout</button>
-    <div>
-        <button onclick="fetchProducts('/product', 'productTable')">All Products</button>
-        <button onclick="fetchProducts('/products/high-price', 'productTable')">High Price Products</button>
-        <button onclick="fetchProducts('/products/ordered-by-price', 'productTable')">Ordered by Price</button>
-        <button onclick="fetchProductsByCategory('Electronics', 'productTable')">View Electronics</button>
-        <button onclick="fetchProductsByCategory('Accessories', 'productTable')">View Accessories</button>
-        <button onclick="fetchProductsForOrder()">Place an Order</button>
+    <div class="container">
+        <h1>Customer Dashboard</h1>
+
+        <div class="button-group">
+            <button onclick="window.location.href='/my-orders';">View My Orders</button>
+            <button onclick="fetchProducts('/product', 'productTable')">All Products</button>
+            <button onclick="fetchProducts('/products/high-price', 'productTable')">High Price Products</button>
+            <button onclick="fetchProducts('/products/ordered-by-price', 'productTable')">Ordered by Price</button>
+            <button onclick="fetchProductsByCategory('Electronics', 'productTable')">View Electronics</button>
+            <button onclick="fetchProductsByCategory('Accessories', 'productTable')">View Accessories</button>
+            <button onclick="fetchProductsForOrder()">Place an Order</button>
+            <button class="logout" onclick="window.location.href='/logout';">Logout</button>
+        </div>
+
+        <table id="productTable"></table>
+
+        <button id="submit-order" onclick="placeOrder()">Submit Order</button>
     </div>
-    <table id="productTable"></table>
-    <button onclick="placeOrder()" style="margin-top: 20px; display: block;">Submit Order</button>
 </body>
+</html>
+
 
 
 

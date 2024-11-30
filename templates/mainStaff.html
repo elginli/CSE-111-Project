@@ -1,33 +1,114 @@
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Dashboard</title>
     <style>
-        .logout-button {
-            display: inline-block;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h3 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section h3 {
+            margin-bottom: 10px;
+        }
+
+        .button-group {
+            text-align: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .button-group a button {
             padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            background-color: #007BFF;
+            background-color: #007bff;
             border: none;
             border-radius: 5px;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
-            text-align: center;
-            text-decoration: none;
+            transition: all 0.3s ease;
         }
-        .logout-button:hover {
+
+        .button-group a button:hover {
             background-color: #0056b3;
+            transform: scale(1.05);
         }
+
+        .logout-button {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-button button {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-button button:hover {
+            background-color: #a71d2a;
+            transform: scale(1.05);
+        }
+
     </style>
 </head>
 <body>
-    <h1>Welcome Staff</h1>
-    <p>This is the Staff Dashboard.</p>
+    <div class="container">
+        <h1>Welcome Staff</h1>
 
-    <!-- Logout Button -->
-    <form action="/logout" method="GET">
-        <button type="submit" class="logout-button">Logout</button>
-    </form>
+        <div class="section">
+            <h3>Manage Products</h3>
+            <div class="button-group">
+                <a href="/update_product"><button>Update Product</button></a>
+                <a href="/remove_product"><button>Remove Product</button></a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Manage Orders</h3>
+            <div class="button-group">
+                <a href="/update_order"><button>Update Order</button></a>
+                <a href="/remove_order"><button>Remove Order</button></a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Manage Shipments</h3>
+            <div class="button-group">
+                <a href="/update_shipment"><button>Update Shipment</button></a>
+                <a href="/remove_shipment"><button>Remove Shipment</button></a>
+            </div>
+        </div>
+
+        <div class="logout-button">
+            <a href="/logout"><button>Logout</button></a>
+        </div>
+    </div>
+
 </body>
 </html>
