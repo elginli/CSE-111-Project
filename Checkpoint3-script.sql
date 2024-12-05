@@ -213,7 +213,7 @@ VALUES
     (9, 9),
     (10, 10);
 
-/*
+
 --SQL queries
 
 --Inserting new items
@@ -392,5 +392,25 @@ Join Shipment ON 'Order'.OrderID = Shipment.OrderID
 Where 'Order'.OrderID = '5'
 Group by 'Order'.OrderID;
 
+--getting logged in customer's order
+SELECT 
+    o.OrderID AS OrderID, 
+    o.OrderDate AS OrderDate, 
+    Product.Name AS ProductName, 
+    OrderProduct.Quantity AS Quantity, 
+    (Product.Price * OrderProduct.Quantity) AS ProductTotal,
+    Shipment.Status AS ShipmentStatus
+FROM `Order` o
+JOIN OrderProduct ON OrderProduct.OrderID = o.OrderID
+JOIN Product ON OrderProduct.ProductID = Product.ProductID
+LEFT JOIN Shipment ON o.OrderID = Shipment.OrderID
+WHERE o.CustomerID = ?
+ORDER BY o.OrderDate DESC, Product.Name ASC;
 
-*/
+--get all products based on category
+SELECT ProductID, Name, Category, Price, StockQuantity
+    FROM Product
+    WHERE Product.Category = ?
+    ORDER BY Product.ProductID;
+
+--scripts used in checkpoint 3 are variations of the ones here, the scripts in the application just contain ? instead of specific entries.
