@@ -626,5 +626,45 @@ def place_order():
 
     return jsonify({'message': 'Connection failed'}), 500
 
+# Staff add new product
+@app.route('/add_product', methods=['GET', 'POST'])
+def add_product():
+    if 'supplier_id' not in session:
+        flash('Unauthorized access! Please log in.', 'danger')
+        return redirect(url_for('staff_login'))
+
+    conn = open_connection()
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        price = request.form.get('price')
+        category = request.form.get('category')
+        stock_quantity = request.form.get('stock_quantity')
+
+        if not name or not price or not category or not stock_quantity:
+            flash('All fields are required!', 'danger')
+            return redirect(url_for('add_product'))
+
+        try:
+            if conn:
+                cursor = conn.cursor()
+                sql = """
+                INSERT INTO Product (Name, Price, Category, StockQuantity)
+                VALUES (?, ?, ?, ?);
+                """
+                cursor.execute(sql, (name, price, category, stock_quantity))
+                conn.commit()
+                flash(f'Product "{name}" added successfully!', 'success')
+            else:
+                flash('Failed to connect to the database.', 'danger')
+        except sqlite3.Error as e:
+            conn.rollback()
+            flash(f'Database error: {e}', 'danger')
+        finally:
+            if conn:
+                conn.close()
+        return redirect(url_for('mainSupplier'))
+
+    return render_template('add_product.html')
 if __name__ == '__main__':
     app.run(debug=True)
