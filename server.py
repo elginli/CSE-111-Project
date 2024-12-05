@@ -626,7 +626,7 @@ def place_order():
 
     return jsonify({'message': 'Connection failed'}), 500
 
-# Staff add new product
+#Supplier add new product
 @app.route('/add_product', methods=['GET', 'POST'])
 def add_product():
     if 'supplier_id' not in session:
